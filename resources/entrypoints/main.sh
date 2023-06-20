@@ -62,10 +62,6 @@ else
 
 	if [ "$1" == "rdrs" ]; then
         echo "[entrypoints/main.sh] Starting REST API server: $@"
-        
-        # TODO: This is already set in the Dockerfile; Remove this here and
-        #   figure out how to pass this on to the mysql user.
-        export LD_LIBRARY_PATH=/srv/hops/mysql/lib:/usr/local/ssl/lib
 
 	elif [ "$1" == "ndb_mgmd" ]; then
 		echo "[entrypoints/main.sh] Starting ndb_mgmd"

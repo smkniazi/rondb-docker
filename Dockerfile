@@ -64,10 +64,8 @@ RUN --mount=type=cache,target=$DOWNLOADS_CACHE_DIR \
     # Could also run `make test`
     # `make install` places shared libraries into $OPENSSL_ROOT
 
-# Beware that this is set manually again for the mysql user in the entrypoint
-ENV LD_LIBRARY_PATH=$OPENSSL_ROOT/lib/:$LD_LIBRARY_PATH
-# So the path survives changing user
-RUN echo $LD_LIBRARY_PATH > /etc/ld.so.conf
+# Add OpenSSL to library load path
+RUN echo $OPENSSL_ROOT/lib > /etc/ld.so.conf.d/openssl.conf
 RUN ldconfig --verbose
 
 # Copying bare minimum of Hopsworks cloud environment for now
@@ -103,10 +101,8 @@ RUN ln -s $RONDB_BIN_DIR $RONDB_BIN_DIR_SYMLINK
 
 ENV PATH=$RONDB_BIN_DIR_SYMLINK/bin:$PATH
 
-# Beware that this is set manually again for the mysql user in the entrypoint
-ENV LD_LIBRARY_PATH=$RONDB_BIN_DIR_SYMLINK/lib:$LD_LIBRARY_PATH
-# So the path survives changing user
-RUN echo $LD_LIBRARY_PATH > /etc/ld.so.conf
+# Add RonDB to library load path
+RUN echo $RONDB_BIN_DIR_SYMLINK/lib > /etc/ld.so.conf.d/rondb.conf
 RUN ldconfig --verbose
 
 ENV RONDB_DATA_DIR=$HOPSWORK_DIR/mysql-cluster
