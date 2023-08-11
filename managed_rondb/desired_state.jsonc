@@ -111,7 +111,8 @@
     "VmTypeApis": "medium",
     "VmTypeMysqlds": "large",
     "VmTypeNdbds": "xlarge",
-    // Use this to scale MySQLd servers & Api containers:
+    // Use this to scale MGMds, MySQL servers & Api containers:
+    "NumManagedMgmdVms": 1,
     "NumManagedMysqldVms": 1,
     "NumManagedApiVms": 1,
     /*
