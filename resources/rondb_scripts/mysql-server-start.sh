@@ -43,7 +43,7 @@ if [ -n "$NO_DAEMON" ]; then
     echo "Starting the MySQL server as a foreground process"
     exec $mysqld_command
 else
-    $mysqld_command >/srv/hops/mysql-cluster/log/mysql_52_out.log 2>&1 </dev/null &
+    $mysqld_command --daemonize --log-error=/srv/hops/mysql-cluster/log/mysql_52_out.log --log-error-verbosity=3
 fi
 
 exit $?
