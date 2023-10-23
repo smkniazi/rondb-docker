@@ -95,10 +95,12 @@ jobs:
         run: |
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$AMD_IMAGE_NAME:latest
           docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
+          docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker push hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker push hopsworks/$AMD_IMAGE_NAME:latest
@@ -129,6 +131,7 @@ jobs:
           VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker buildx build . \
               --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
+              --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest \
               --platform=linux/arm64 \
               --output type=registry \
               --build-arg RONDB_VERSION=$RONDB_VERSION_LTS \
@@ -177,6 +180,9 @@ jobs:
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
+          docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-latest \
+            hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_LTS-latest \
+            hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_STABLE-latest \
             hopsworks/$AMD_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
             hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
