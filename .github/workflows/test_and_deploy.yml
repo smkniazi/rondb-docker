@@ -139,6 +139,7 @@ jobs:
 
       - name: Build and push ARM64 image for RONDB_VERSION_STABLE
         run: |
+          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
           docker buildx build . \
               --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION \
               --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest \
