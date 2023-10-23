@@ -13,8 +13,6 @@ ARG TARGETPLATFORM
 ARG TARGETARCH
 ARG TARGETVARIANT
 
-ARG OPEN_SSL_VERSION=1.1.1s
-
 RUN echo "Running on $BUILDPLATFORM, building for $TARGETPLATFORM"
 RUN echo "TARGETARCH: $TARGETARCH; TARGETVARIANT: $TARGETVARIANT"
 
@@ -40,34 +38,6 @@ RUN sed -ri '/secure_path/d' /etc/sudoers
 # Creating a cache dir for downloads to avoid redownloading
 ENV DOWNLOADS_CACHE_DIR=/tmp/downloads
 RUN mkdir $DOWNLOADS_CACHE_DIR
-
-# we need libssl.so.1.1 & libcrypto.so.1.1 for our binaries;
-#   /usr/lib/aarch64-linux-gnu only contains libssl.so,
-#   which is from openssl-3.x;
-#   to get these libraries, we need to download openssl-1.1.1;
-#   we don't need openssl-1.1.1 itself, only its shared libraries;
-#   commands are from https://linuxpip.org/install-openssl-linux/
-ENV OPENSSL_ROOT=/usr/local/ssl
-RUN --mount=type=cache,target=$DOWNLOADS_CACHE_DIR \
-    --mount=type=cache,target=/var/cache/apt,id=ubuntu22-apt-$TARGETPLATFORM \
-    --mount=type=cache,target=/var/lib/apt/lists,id=ubuntu22-apt-lists-$TARGETPLATFORM \
-    apt-get update -y \
-    && apt-get install -y build-essential checkinstall zlib1g-dev \
-    && wget -N --progress=bar:force -P $DOWNLOADS_CACHE_DIR \
-        https://www.openssl.org/source/openssl-$OPEN_SSL_VERSION.tar.gz \
-    && tar -xf $DOWNLOADS_CACHE_DIR/openssl-$OPEN_SSL_VERSION.tar.gz -C . \
-    && cd openssl-$OPEN_SSL_VERSION \
-    && ./config --prefix=$OPENSSL_ROOT --openssldir=$OPENSSL_ROOT shared zlib \
-    && make -j$(nproc) \
-    && make install \
-    && cd .. \
-    && rm -r openssl-$OPEN_SSL_VERSION
-    # Could also run `make test`
-    # `make install` places shared libraries into $OPENSSL_ROOT
-
-# Add OpenSSL to library load path
-RUN echo $OPENSSL_ROOT/lib > /etc/ld.so.conf.d/openssl.conf
-RUN ldconfig --verbose
 
 # Copying bare minimum of Hopsworks cloud environment for now
 FROM rondb_runtime_dependencies as cloud_preparation
@@ -102,8 +72,11 @@ RUN ln -s $RONDB_BIN_DIR $RONDB_BIN_DIR_SYMLINK
 
 ENV PATH=$RONDB_BIN_DIR_SYMLINK/bin:$PATH
 
-# Add RonDB to library load path
-RUN echo $RONDB_BIN_DIR_SYMLINK/lib > /etc/ld.so.conf.d/rondb.conf
+# Add RonDB libs to system path (cannot use env variables here)
+COPY <<-"EOF" /etc/ld.so.conf.d/rondb.conf
+/srv/hops/mysql/lib
+/srv/hops/mysql/lib/private
+EOF
 RUN ldconfig --verbose
 
 ENV RONDB_DATA_DIR=$HOPSWORK_DIR/mysql-cluster
