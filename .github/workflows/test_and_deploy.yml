@@ -25,7 +25,7 @@ jobs:
       - name: Build and run Docker Compose cluster with benchmarking for RONDB_VERSION_LTS
         run: |
           ./run.sh -lv \
-            --rondb-tarball-url https://repo.hops.works/master/rondb-$RONDB_VERSION_LTS-linux-glibc2.17-x86_64.tar.gz \
+            --rondb-tarball-url https://repo.hops.works/master/rondb-$RONDB_VERSION_LTS-linux-glibc2.28-x86_64.tar.gz \
             --rondb-version $RONDB_VERSION_LTS \
             --size mini \
             --run-benchmark sysbench_single \
@@ -92,7 +92,7 @@ jobs:
               --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
-              --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.17-x86_64.tar.gz
+              --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-$RONDB_VERSION_STABLE-linux-glibc2.28-x86_64.tar.gz
 
       # In the main branch, we work with "<version>-SNAPSHOT", which might as well be called "latest"
       - name: Push AMD64 *latest* images to Dockerhub
