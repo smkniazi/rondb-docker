@@ -115,9 +115,9 @@ services:
       environment:
       - HOST_GROUP_ID=20
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
-      - MYSQL_USER=mysql
-      - MYSQL_PASSWORD=Abc123?e
-      - MYSQL_SETUP_APP=1
+      - MYSQL_BENCH_USER=mysql
+      - MYSQL_BENCH_PASSWORD=Abc123?e
+      - MYSQL_INITIALIZE_DB=1
 
     mysqld_2:
       image: rondb-standalone:21.04.13
@@ -153,8 +153,8 @@ services:
       environment:
       - HOST_GROUP_ID=20
       - MYSQL_ALLOW_EMPTY_PASSWORD=true
-      - MYSQL_USER=mysql
-      - MYSQL_PASSWORD=Abc123?e
+      - MYSQL_BENCH_USER=mysql
+      - MYSQL_BENCH_PASSWORD=Abc123?e
 
     rest_1:
       image: rondb-standalone:21.04.13
@@ -211,7 +211,7 @@ services:
         target: /home/mysql/benchmarks/dbt2_multi
       environment:
       - HOST_GROUP_ID=20
-      - MYSQL_PASSWORD=Abc123?e
+      - MYSQL_BENCH_PASSWORD=Abc123?e
       depends_on:
         ndbd_1:
           condition: service_healthy
