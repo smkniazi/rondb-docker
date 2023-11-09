@@ -139,10 +139,10 @@ jobs:
       - name: Build and push ARM64 image for RONDB_VERSION_LTS
         run: |
           if [[ "${{ startsWith(github.ref_name, 'release-') }}" == "true" ]]; then
-            TAG="hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest"
-          else
             VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
             TAG="hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION"
+          else
+            TAG="hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest"
           fi
           docker buildx build . \
               --tag $TAG \
@@ -157,11 +157,11 @@ jobs:
       - name: Build and push ARM64 image for RONDB_VERSION_STABLE
         run: |
           if [[ "${{ startsWith(github.ref_name, 'release-') }}" == "true" ]]; then
-            TAGS="--tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest"
-            TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
-          else
             VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
             TAGS="--tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION"
+          else
+            TAGS="--tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest"
+            TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
           fi
           docker buildx build . \
               $TAGS \
