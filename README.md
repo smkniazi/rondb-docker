@@ -29,27 +29,27 @@ To run the optimal cluster for your machine, `run.sh` can be run with 5 differen
 
 - **mini**: 
   - Cluster setup: 1 MGM server, 1 data node, 1 MySQL server and 1 API node
-  - Docker resource utilisation: 2.5 GB of memory and up to 4 CPUs
+  - Docker resource utilization: 2.5 GB of memory and up to 4 CPUs
   - Recommended machine: 8 GB of memory
 
 - **small** (default):
   - Cluster setup: 1 MGM server, 2 data nodes, 2 MySQL servers and 1 API node
-  - Docker resource utilisation: 6 GB of memory and up to 16 CPUs
+  - Docker resource utilization: 6 GB of memory and up to 16 CPUs
   - Recommended machine: 16 GB of memory and 16 CPUs
 
 - **medium**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 16 GB of memory and up to 16 CPUs
+  - Docker resource utilization: 16 GB of memory and up to 16 CPUs
   - Recommended machine: 32 GB of memory and 16 CPUs
 
 - **large**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 20 GB of memory and up to 32 CPUs
+  - Docker resource utilization: 20 GB of memory and up to 32 CPUs
   - Recommended machine: 32 GB of memory and 32 CPUs
 
 - **xlarge**:
   - Cluster setup: Same as **small**
-  - Docker resource utilisation: 30 GB of memory and up to 50 CPUs
+  - Docker resource utilization: 30 GB of memory and up to 50 CPUs
   - Recommended machine: 64 GB of memory and 64 CPUs
 
 Keep in mind, that you must also allow your Docker engine to use the resources that are required. To change these restrictions in Docker Desktop, do as described [here](https://stackoverflow.com/a/44533437/9068781).
@@ -80,7 +80,7 @@ Commands to run:
 ```bash
 # Run docker-compose cluster with image from DockerHub
 ./build_run_docker.sh \
-  --rondb-version latest \
+  --rondb-version 22.10.1 \
   --num-mgm-nodes 1 \
   --node-groups 1 \
   --replication-factor 2 \
@@ -91,8 +91,8 @@ Commands to run:
 # Build and run image **for local platform** in docker-compose using local RonDB tarball (download it first!)
 # Beware that the local platform is linux/arm64 in this case
 ./build_run_docker.sh \
-  --rondb-tarball-path ./rondb-21.04.15-linux-glibc2.35-arm64_v8.tar.gz \
-  --rondb-version 21.04.15 \
+  --rondb-tarball-path ./rondb-21.04.16-linux-glibc2.35-arm64_v8.tar.gz \
+  --rondb-version 21.04.16 \
   --num-mgm-nodes 1 \
   --node-groups 1 \
   --replication-factor 2 \
@@ -101,16 +101,16 @@ Commands to run:
   --num-benchmarking-nodes 1
 
 # Build cross-platform image (linux/arm64 here)
-docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.15 \
-  --build-arg RONDB_VERSION=21.04.15 \
+docker buildx build . --platform=linux/arm64 -t rondb-standalone:21.04.16 \
+  --build-arg RONDB_VERSION=21.04.16 \
   --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \  # alternatively "local"
-  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.15-linux-glibc2.35-arm64_v8.tar.gz # alternatively a local file path
+  --build-arg RONDB_TARBALL_URI=https://repo.hops.works/master/rondb-21.04.16-linux-glibc2.35-arm64_v8.tar.gz # alternatively a local file path
 
 # Explore image
-docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.15
+docker run --rm -it --entrypoint=/bin/bash rondb-standalone:21.04.16
 ```
 
-Exemplatory commands to run with running docker-compose cluster:
+Example commands to run with running docker-compose cluster:
 ```bash
 # Check current ongoing memory consumption of running cluster
 docker stats
@@ -152,7 +152,7 @@ The Docker images come with a set of benchmarks pre-installed. To run any of the
 
 # Running with a custom size; The benchmarks are run on the API containers and make queries towards the mysqld containers; this means that both types are needed.
 ./build_run_docker.sh \
-  -v latest -m 1 -g 1 -r 2 -my 2 -bn 1 \
+  -v 22.10.1 -m 1 -g 1 -r 2 -my 2 -bn 1 \
   --run-benchmark <sysbench_single, sysbench_multi, dbt2_single>
 ```
 

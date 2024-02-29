@@ -41,7 +41,7 @@ RUN mkdir $DOWNLOADS_CACHE_DIR
 
 # Copying bare minimum of Hopsworks cloud environment for now
 FROM rondb_runtime_dependencies as cloud_preparation
-ARG RONDB_VERSION=21.04.15
+ARG RONDB_VERSION=21.04.16
 RUN groupadd mysql && adduser mysql --ingroup mysql
 ENV HOPSWORK_DIR=/srv/hops
 ENV RONDB_BIN_DIR=$HOPSWORK_DIR/mysql-$RONDB_VERSION
@@ -111,12 +111,14 @@ COPY --chown=mysql:mysql ./resources/entrypoints ./docker/rondb_standalone/entry
 COPY --chown=mysql:mysql ./resources/healthcheck.sh ./docker/rondb_standalone/healthcheck.sh
 
 # Can be used to mount SQL init scripts
-RUN mkdir ./docker/rondb_standalone/sql_init_scripts
+ENV SQL_INIT_SCRIPTS_DIR=$HOPSWORK_DIR/docker/rondb_standalone/sql_init_scripts
+RUN mkdir $SQL_INIT_SCRIPTS_DIR
 
 # Creating benchmarking files/directories
+# When using load balancers, "sysbench" can be used for both _single and _multi
 ENV BENCHMARKS_DIR=/home/mysql/benchmarks
 RUN mkdir $BENCHMARKS_DIR && cd $BENCHMARKS_DIR \
-    && mkdir -p sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
+    && mkdir -p sysbench sysbench_single sysbench_multi dbt2_single dbt2_multi dbt2_data
 
 # Avoid changing files if they are already owned by mysql; otherwise image size doubles
 RUN chown mysql:mysql --from=root:root -R $HOPSWORK_DIR /home/mysql
