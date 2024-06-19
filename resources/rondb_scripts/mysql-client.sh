@@ -25,14 +25,20 @@ fi
 
 MYSQL_SOCKET=$(/srv/hops/mysql-cluster/ndb/scripts/get-mysql-socket.sh)
 echo "Using socket: $MYSQL_SOCKET"
+
+password_arg="-p\$MYSQL_ROOT_PASSWORD"
+if [ -z $MYSQL_ROOT_PASSWORD ]; then
+    password_arg="--skip-password"
+fi
+
 if [ "$EXECUTE_SQL" = "-e" ]; then
-    mysql_command='/srv/hops/mysql/bin/mysql --defaults-file=$MYSQL_CONF -u root --skip-password -S $MYSQL_SOCKET $DB $EXECUTE_SQL "$@"'
+    mysql_command='/srv/hops/mysql/bin/mysql --defaults-file=$MYSQL_CONF -u root $password_arg -S $MYSQL_SOCKET $DB $EXECUTE_SQL "$@"'
     # Don't echo code in production because other programs rely on reading the script's output
     #   echo "Executing command: $mysql_command"
     eval $mysql_command
 else
 # Case 3
-    mysql_command="/srv/hops/mysql/bin/mysql --defaults-file=$MYSQL_CONF -u root --skip-password -S $MYSQL_SOCKET $DB $@"
+    mysql_command="/srv/hops/mysql/bin/mysql --defaults-file=$MYSQL_CONF -u root $password_arg -S $MYSQL_SOCKET $DB $@"
     # Don't echo code in production because other programs rely on reading the script's output
     #   echo "Executing command: $mysql_command"
     eval $mysql_command
