@@ -121,7 +121,7 @@ jobs:
       - name: Build X86 image for RONDB_VERSION_STABLE
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           docker buildx build . \
               --tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION \
               --build-arg RONDB_VERSION=$RONDB_VERSION_STABLE \
@@ -131,7 +131,7 @@ jobs:
       - name: Push X86 images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION
           docker push hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION
@@ -141,7 +141,7 @@ jobs:
       - name: Push X86 *latest* images to Dockerhub
         if: github.repository == 'logicalclocks/rondb-docker' && needs.check-git.outputs.is_highest_release == 'true'
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           docker tag rondb-standalone:$RONDB_VERSION_LTS-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_STABLE-latest
           docker tag rondb-standalone:$RONDB_VERSION_STABLE-$VERSION hopsworks/$X86_IMAGE_NAME:latest
@@ -175,7 +175,7 @@ jobs:
       # all types of benchmarking to the tests.
       - name: Build and push ARM64 image for RONDB_VERSION_LTS
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           TAGS="hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION"
           if [[ "$is_highest_release" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_LTS-latest"
@@ -192,7 +192,7 @@ jobs:
 
       - name: Build and push ARM64 image for RONDB_VERSION_STABLE
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
           TAGS="--tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-$VERSION"
           if [[ "$is_highest_release" == "true" ]]; then
             TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:$RONDB_VERSION_STABLE-latest"
@@ -228,7 +228,7 @@ jobs:
 
       - name: Create and push multi-platform image
         run: |
-          VERSION="$(< "./VERSION" sed -e 's/^[[:space:]]*//')"
+          VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
           docker buildx imagetools create -t hopsworks/rondb-standalone:$RONDB_VERSION_LTS-$VERSION \
             hopsworks/$X86_IMAGE_NAME:$RONDB_VERSION_LTS-$VERSION \
