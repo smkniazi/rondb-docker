@@ -85,7 +85,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Login to Dockerhub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         with:
           username: hopsworks
@@ -202,13 +202,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Dockerhub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: hopsworks
           password: ${{ secrets.DOCKERHUB_TOKEN }}
@@ -245,30 +245,41 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Login to Dockerhub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: hopsworks
           password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Login to Nexus
+        uses: docker/login-action@v3
+        with:
+          registry: docker.hops.works
+          username: ${{ secrets.NEXUS_USER }}
+          password: ${{ secrets.NEXUS_PASSWORD }}
 
       - name: Create and push multi-platform image
         run: |
           VERSION="$(sed -e 's/^[[:space:]]*//' -e '/-SNAPSHOT$/s/.*/dev/' ./VERSION)"
 
-          docker buildx imagetools create -t hopsworks/rondb:${{ inputs.rondb_version }}-$VERSION \
-            hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
-            hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
-        
-          if [[ "${{ needs.check-git.outputs.is_highest_release }}" == "true" ]]; then
-            docker buildx imagetools create -t hopsworks/rondb:${{ inputs.rondb_version }}-latest \
-              hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
-              hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest
-              
-              if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
-                docker buildx imagetools create -t hopsworks/rondb:latest \
-                  hopsworks/$X86_IMAGE_NAME:latest \
-                  hopsworks/$ARM_IMAGE_NAME:latest
-              fi
-          fi
+          for repo_url in docker.io docker.hops.works; do
+
+            docker buildx imagetools create -t $repo_url/hopsworks/rondb:${{ inputs.rondb_version }}-$VERSION \
+              hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
+              hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
+
+            if [[ "${{ needs.check-git.outputs.is_highest_release }}" == "true" ]]; then
+              docker buildx imagetools create -t $repo_url/hopsworks/rondb:${{ inputs.rondb_version }}-latest \
+                hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
+                hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest
+
+                if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
+                  docker buildx imagetools create -t $repo_url/hopsworks/rondb:latest \
+                    hopsworks/$X86_IMAGE_NAME:latest \
+                    hopsworks/$ARM_IMAGE_NAME:latest
+                fi
+            fi
+
+          done
