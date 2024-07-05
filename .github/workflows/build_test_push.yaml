@@ -223,19 +223,10 @@ jobs:
               --build-arg RONDB_TARBALL_LOCAL_REMOTE=remote \
               --build-arg RONDB_X86_TARBALL_URI=${{ inputs.base_download_url }}/${{ inputs.rondb_x86_tarball_name }}
 
-      - name: Push standard versioned image
+      - name: Push versioned image
         if: github.repository == 'logicalclocks/rondb-docker' && (startsWith(github.ref_name, 'release-') || github.ref_name == 'main')
         run: |
           NEW_IMAGE_ID=hopsworks/$X86_IMAGE_ID
-
-          docker tag $X86_IMAGE_ID $NEW_IMAGE_ID
-          docker push $NEW_IMAGE_ID
-
-      - name: Push with tag `<rondb-version>-latest`
-        # Our "latest" branch points to the latest *release* branch.
-        if: needs.process-info.outputs.is_highest_release == 'true'
-        run: |
-          NEW_IMAGE_ID=hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest
 
           docker tag $X86_IMAGE_ID $NEW_IMAGE_ID
           docker push $NEW_IMAGE_ID
@@ -276,11 +267,9 @@ jobs:
           ARM_IMAGE_NAME="${{ needs.process-info.outputs.arm_image_name }}"
 
           TAGS="--tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION"
-          if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" ]]; then
-            TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest"
-            if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
-              TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
-            fi
+          if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" &&
+                "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
+            TAGS+=" --tag hopsworks/$ARM_IMAGE_NAME:latest"
           fi
 
           docker buildx build . \
@@ -332,16 +321,11 @@ jobs:
               hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION \
               hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-$VERSION
 
-            if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" ]]; then
-              docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
-                hopsworks/$X86_IMAGE_NAME:${{ inputs.rondb_version }}-latest \
-                hopsworks/$ARM_IMAGE_NAME:${{ inputs.rondb_version }}-latest
-
-                if [[ "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
-                  docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:latest \
-                    hopsworks/$X86_IMAGE_NAME:latest \
-                    hopsworks/$ARM_IMAGE_NAME:latest
-                fi
+            if [[ "${{ needs.process-info.outputs.is_highest_release }}" == "true" && 
+                  "${{ inputs.is_latest_rondb_release }}" == "true" ]]; then
+              docker buildx imagetools create -t $repo_url/hopsworks/$MULTI_IMAGE_NAME:latest \
+                hopsworks/$X86_IMAGE_NAME:latest \
+                hopsworks/$ARM_IMAGE_NAME:latest
             fi
 
           done
