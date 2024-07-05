@@ -97,8 +97,10 @@ jobs:
         id: is_highest_release
         run: |
           ALL_RELEASES=$(git branch -r | grep 'origin/release-' | sed 's|origin/||')
-          HIGHEST_RELEASE=$(echo "$ALL_RELEASES" | sort -V | tail -n 1)
-          echo "Highest release branch is $HIGHEST_RELEASE"
+          HIGHEST_RELEASE=$(echo "$ALL_RELEASES" | sort -V | tail -n 1 | xargs)
+          echo "Highest release branch is '$HIGHEST_RELEASE'"
+          echo "GITHUB_REF_NAME is '${GITHUB_REF_NAME}'"
+
           if [ "${GITHUB_REF_NAME}" = "$HIGHEST_RELEASE" ]; then
             echo "Current branch is the highest release branch."
             echo "is_highest=true" >> $GITHUB_OUTPUT
