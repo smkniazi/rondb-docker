@@ -109,7 +109,6 @@ jobs:
 
       # When using tarballs from rondb-dev, we'll use the image name "rondb-dev"
       - name: Get image names
-        if: github.repository == 'logicalclocks/rondb-docker'
         id: image_names
         run: |
           if [ "${{ inputs.base_download_url }}" == "https://repo.hops.works/master" ]; then
