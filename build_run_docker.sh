@@ -544,6 +544,10 @@ for CONTAINER_NUM in $(seq "$NUM_MGM_NODES"); do
     command=$(printf "$COMMAND_TEMPLATE" "[\"ndb_mgmd\", \"--ndb-nodeid=$NODE_ID\", \"--initial\"]")
     template+="$command"
 
+    template+="$PORTS_FIELD"
+    ports=$(printf "$PORTS_TEMPLATE" "1186" "1186")
+    template+="$ports"
+
     template+="
       deploy:
         resources:
@@ -591,6 +595,10 @@ for CONTAINER_NUM in $(seq $NUM_DATA_NODES); do
     healthcheck_command="./docker/rondb_standalone/healthcheck.sh $MGM_CONNECTION_STRING $NODE_ID"
     healthcheck=$(printf "$HEALTHCHECK_TEMPLATE" "$healthcheck_command" "15" "15" "3" "20")
     template+="$healthcheck"
+
+    template+="$PORTS_FIELD"
+    ports=$(printf "$PORTS_TEMPLATE" "11860" "11860")
+    template+="$ports"
 
     template+="
       deploy:

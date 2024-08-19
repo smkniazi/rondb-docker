@@ -1,1 +1,3 @@
 GRANT ALL PRIVILEGES ON *.* TO 'hopsworks' @'%';
+CREATE USER 'hops'@'%' IDENTIFIED BY 'hops';
+GRANT ALL PRIVILEGES ON *.* TO 'hops'@'%' WITH GRANT OPTION;
