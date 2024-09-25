@@ -1,0 +1,2 @@
+docker exec -it mysqld_1_test /srv/hops/mysql-cluster/ndb/scripts/mysql-client.sh
+
