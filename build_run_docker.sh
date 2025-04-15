@@ -385,7 +385,7 @@ BENCH_DIR="/srv/hops/benchmarks"
 #######################
 #######################
 
-# RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION-$VERSION"
+#RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION-$VERSION"
 RONDB_IMAGE_ID="$RONDB_IMAGE_NAME:$RONDB_VERSION"
 if [ ! -n "$RONDB_TARBALL_PATH" ] && [ ! -n "$RONDB_TARBALL_URL" ]; then
     RONDB_IMAGE_ID="hopsworks/$RONDB_IMAGE_ID"
