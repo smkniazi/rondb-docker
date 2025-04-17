@@ -433,6 +433,7 @@ service-template() {
 
     %s:
       image: %s
+      network_mode: host
       container_name: %s
       user: $(id -u):$(id -g)
 " "$SERVICE_NAME" "$RONDB_IMAGE_ID" "$SERVICE_NAME";
